@@ -1,9 +1,14 @@
 import { Response } from "express";
 
-export const Error = (res: Response, message: unknown) => () => {
-  res.status(400).json({ status: false, message });
+export const HandlerError = (res: Response, error: any, message: string) => {
+  console.log(error);
+  return res.status(400).json({ status: false, message });
 };
 
-export const Success = (res: Response, message: string, data: Object) => () => {
-  res.status(200).json({ status: false, message, data });
+export const HandlerSuccess = (
+  res: Response,
+  message: string,
+  data: Object = []
+) => {
+  return res.status(200).json({ status: true, message, data });
 };
