@@ -1,30 +1,27 @@
 import { Response, Request } from "express";
+import { HandlerError, HandlerSuccess } from "../helpers/handler";
 import SkillRepository from "../repository/skills";
 
 export default class SkillController {
-  static async getAll(req: Request, res: Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<Response> {
     try {
       const data = await SkillRepository.getAll(req.query);
-      res.status(200).json({ status: true, message: "All skills", data });
+      return HandlerSuccess(res, "All skills", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async show(req: Request, res: Response): Promise<void> {
+  static async show(req: Request, res: Response): Promise<Response> {
     try {
       const data = await SkillRepository.show(req.params.uuid);
-      res
-        .status(200)
-        .json({ status: true, message: "Success, skill found", data });
+      return HandlerSuccess(res, "Success, skill found", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async create(req: Request, res: Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<Response> {
     try {
       const { name, skillUuid } = req.body;
 
@@ -36,16 +33,14 @@ export default class SkillController {
       }
 
       const data = await SkillRepository.create({ name, skillId });
-      res
-        .status(200)
-        .json({ status: true, message: "Success, skill created", data });
+      return HandlerSuccess(res, "Success, skill created", data);
     } catch (error: any) {
       console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async update(req: Request, res: Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<Response> {
     try {
       const { skillUuid } = req.body;
       if (skillUuid) {
@@ -59,23 +54,19 @@ export default class SkillController {
         uuid: req.params.uuid,
         payload: req.body,
       });
-      res
-        .status(200)
-        .json({ status: true, message: "Success, skill updated", data });
+      return HandlerSuccess(res, "Success, skill updated", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async delete(req: Request, res: Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<Response> {
     try {
       const data = await SkillRepository.delete(req.params.uuid);
       if (!data) throw new Error("Skill not found");
-      res.status(200).json({ status: true, message: "Success, skill deleted" });
+      return HandlerSuccess(res, "Success, skill deleted", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 }
