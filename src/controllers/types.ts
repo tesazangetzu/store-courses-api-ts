@@ -1,82 +1,56 @@
 import { Response, Request } from "express";
+import { HandlerError, HandlerSuccess } from "../helpers/handler";
+import TypeRepository from "../repository/types";
 
 export default class TypeController {
-  static async getAll(req: Request, res: Response): Promise<void> {
+  static async getAll(req: Request, res: Response): Promise<Response> {
     try {
-      const data = await CategoryRepository.getAll(req.query);
-      res.status(200).json({ status: true, message: "All categories", data });
+      const data = await TypeRepository.getAll(req.query);
+      return HandlerSuccess(res, "All types", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async show(req: Request, res: Response): Promise<void> {
+  static async show(req: Request, res: Response): Promise<Response> {
     try {
-      const data = await CategoryRepository.show(req.params.uuid);
-      res
-        .status(200)
-        .json({ status: true, message: "Success, category found", data });
+      const data = await TypeRepository.show(req.params.uuid);
+      if (!data) throw new Error("Type not found");
+      return HandlerSuccess(res, "Success, type found", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async create(req: Request, res: Response): Promise<void> {
+  static async create(req: Request, res: Response): Promise<Response> {
     try {
-      const { name, categoryUuid } = req.body;
-
-      let categoryId = null;
-      if (categoryUuid) {
-        const item = await CategoryRepository.showWithAll(categoryUuid);
-        if (!item) throw new Error("Category not found");
-        categoryId = item.id;
-      }
-
-      const data = await CategoryRepository.create({ name, categoryId });
-      res
-        .status(200)
-        .json({ status: true, message: "Success, category created", data });
+      const { name, model } = req.body;
+      const data = await TypeRepository.create({ name, model });
+      return HandlerSuccess(res, "Success, type created", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async update(req: Request, res: Response): Promise<void> {
+  static async update(req: Request, res: Response): Promise<Response> {
     try {
-      const { categoryUuid } = req.body;
-      if (categoryUuid) {
-        const item = await CategoryRepository.showWithAll(categoryUuid);
-        if (!item) throw new Error("Category not found");
-        req.body.categoryId = item.id;
-        delete req.body.categoryUuid;
-      }
-
-      const data = await CategoryRepository.update({
+      const data = await TypeRepository.update({
         uuid: req.params.uuid,
         payload: req.body,
       });
-      res
-        .status(200)
-        .json({ status: true, message: "Success, category updated", data });
+      return HandlerSuccess(res, "Success, type updated", data);
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 
-  static async delete(req: Request, res: Response): Promise<void> {
+  static async delete(req: Request, res: Response): Promise<Response> {
     try {
-      const data = await CategoryRepository.delete(req.params.uuid);
-      if (!data) throw new Error("Category not found");
-      res
-        .status(200)
-        .json({ status: true, message: "Success, category deleted" });
+      const data = await TypeRepository.delete(req.params.uuid);
+      if (!data) throw new Error("Type not found");
+      return HandlerSuccess(res, "Success, type deleted");
     } catch (error: any) {
-      console.log(error);
-      res.status(400).json({ status: false, message: error.message });
+      return HandlerError(res, error, error.message);
     }
   }
 }

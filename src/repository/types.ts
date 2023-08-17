@@ -21,7 +21,6 @@ export default class TypeRepository {
     return Type.findAll({
       attributes: TypeArr,
       where: { ...where },
-      // include,
       order: [["id", order || "asc"]],
       offset: page ? --page * limit : undefined,
       limit,
@@ -32,7 +31,6 @@ export default class TypeRepository {
     return (await Type.findOne({
       where: { uuid },
       attributes: TypeArr,
-      // include,
     }))!;
   }
 
@@ -46,7 +44,6 @@ export default class TypeRepository {
     return (await Type.findOne({
       where: { uuid: item.uuid },
       attributes: TypeArr,
-      // include,
     }))!;
   }
 
@@ -61,7 +58,6 @@ export default class TypeRepository {
     return (await Type.findOne({
       where: { uuid },
       attributes: TypeArr,
-      // include,
     }))!;
   }
 
